@@ -1,0 +1,49 @@
+---
+title: "day1"
+date: "2024-12-01"
+---
+
+```{r library}
+#none
+```
+
+```{r import}
+df <- as.matrix(read.table("day1_input.txt"))
+df_test <- as.matrix(read.table("day1_test_input.txt"))
+```
+
+```{r functions}
+total_distance <- function(input_df){
+  col1_sort <- sort(input_df[,1])
+  col2_sort <- sort(input_df[,2])
+  result <- sum(abs(col2_sort - col1_sort))
+  return(result)
+}
+
+similarity_score <- function(input_df){
+  mat1 = matrix(, nrow = length(input_df[,1]), ncol = 3)
+  for(i in 1:length(input_df[,1])){
+    mat1[i,1] = input_df[i,1]
+    mat1[i,2] = sum(input_df[,2] == mat1[i,1])
+    mat1[i,3] = mat1[i,1]*mat1[i,2]
+  }
+  result <- sum(mat1[,3])
+  return(result)
+}
+```
+
+```{r main}
+result_pt1 <- total_distance(df) 
+result_pt1 # answer = 2970687
+
+result_pt2 <- similarity_score(df) 
+result_pt2 # answer = 23963899
+```
+
+```{r tests}
+result_test_pt1 <- total_distance(df_test)
+result_test_pt1 # answer = 23963899
+
+result_test_pt2 <- similarity_score(df_test)
+result_test_pt2 # answer = 31
+```
