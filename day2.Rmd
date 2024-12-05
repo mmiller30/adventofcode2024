@@ -1,0 +1,166 @@
+---
+title: "day2"
+date: "2024-12-02"
+---
+
+```{r library}
+library(prodlim)
+```
+
+```{r import}
+df <- as.matrix(read.table("day2_input.txt",sep="",fill=TRUE))
+df_test <- as.matrix(read.table("day2_test_input.txt",sep="",fill=TRUE))
+```
+
+```{r functions}
+
+mdiff <- function(input_df){
+  mdiff = matrix(, nrow = length(input_df[,1]), ncol = length(input_df[1,])-1)
+  
+    i_index <- length(input_df[1,])-1
+    for(i in 1:i_index){
+         mdiff[,i] <- input_df[,i+1]-input_df[,i]
+    }
+    
+    return(mdiff)
+}
+
+mono_test <- function(input_df){
+  
+  mat2 = matrix(0, nrow = length(input_df[,1]), ncol = 1)
+    
+    #check for monotonic increase or decreasing
+    int_count <- rowSums(!is.na(input_df))
+    
+    for(j in 1:length(input_df[,1])){
+        if (int_count[j] != abs(sum(sign(input_df[j,]), na.rm = TRUE))) {
+            mat2[j] <- j
+        }
+      }
+    
+    if (sum(mat2) == 0){
+      safe_redux <- input_df
+      }  else if (sum(mat2) != 0){
+        safe_redux <- input_df[-c(mat2),]
+      }
+    
+    return(safe_redux)
+}
+
+diff_test <- function(input_df){
+  mat3 = matrix(0, nrow = length(input_df[,1]), ncol = 1)
+    
+    for(j in 1:length(input_df[,1])){
+      for(k in 1:length(input_df[1,])){
+        if (is.na(input_df[j,k])){
+          next
+        }
+        else if (abs(input_df[j,k]) > 3 | abs(input_df[j,k]) < 1) {
+          mat3[j] <- j
+        }
+      }
+    }
+    
+    safe_redux <- as.matrix(input_df[-c(mat3),])
+    if (ncol(safe_redux) == 1) {
+      safe_redux <- t(safe_redux)
+    }
+
+    return(safe_redux)
+      
+}
+
+
+safety_assessment <- function(input_df){
+  s1 <- mdiff(input_df)
+  s2 <- mono_test(s1)
+  s3 <- diff_test(s2)
+  if (is.null(nrow(s3))){
+    safe_count <- 1
+    } else {
+       safe_count <- nrow(s3)
+    }
+
+  return(safe_count) 
+}
+
+safety_assessment_matrix <- function(input_df){
+  s1 <- mdiff(input_df)
+  s2 <- mono_test(s1)
+  s3 <- diff_test(s2)
+  return(s3) 
+}
+
+
+find_unsafe <- function(input_df){
+  
+  s1 <- mdiff(input_df)
+  safe_redux <- safety_assessment_matrix(input_df)
+
+  s1_s = apply(s1, 1, paste, collapse = ", ")
+  s2_s = apply(safe_redux, 1, paste, collapse = ", ")
+  
+  s1_s2 = intersect(s1_s, s2_s)
+
+  unsafe_redux <- s1[!s1_s %in% s1_s2,]
+  
+  return(unsafe_redux)
+}
+
+
+unsafe_df <- function(input_df){
+  s1 <- mdiff(input_df)
+  safe_redux <- safety_assessment_matrix(input_df)
+  if (nrow(safe_redux) != 0){
+    ind <- row.match(as.data.frame(safe_redux),as.data.frame(s1))
+    unsafe_output <- input_df[-c(ind),]
+  } else if (nrow(safe_redux) == 0){
+    unsafe_output <- input_df
+  }
+  
+  
+  return(unsafe_output)
+}
+
+problem_dampener <- function(input_df){
+
+  safe_redux = matrix(0, nrow = length(input_df[1,]), ncol = 1)
+  
+    for(j in 1:length(input_df[1,])){
+    
+      us_df_red <- unsafe_df(input_df)
+      inj       <- us_df_red[,-c(j)]
+      us_df_inj <- unsafe_df(inj)
+      
+      safe_redux[j] <- nrow(inj) - nrow(us_df_inj)
+      
+      if (safe_redux[j] > 0){
+        ind <- row.match(as.data.frame(inj),as.data.frame(us_df_inj))
+        temp <- us_df_red[c(ind),]
+        input_df <- temp[rowSums(is.na(temp)) == 0, ] 
+      }
+      
+    }
+
+  p_s <- sum(safe_redux)
+  return(p_s)
+}
+
+
+```
+
+```{r main}
+result_pt1 <- safety_assessment(df) 
+result_pt1 # answer = 246
+
+result_pt2 <- problem_dampener(df) + safety_assessment(df)
+result_pt2 # answer = ???
+```
+
+```{r tests}
+result_test_pt1 <- safety_assessment(df_test)
+result_test_pt1 # answer = 2
+
+result_test_pt2 <- problem_dampener(df_test) + safety_assessment(df_test)
+result_test_pt2 # answer = 4
+```
