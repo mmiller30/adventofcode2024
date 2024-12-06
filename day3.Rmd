@@ -1,0 +1,107 @@
+---
+title: "day3"
+date: "2024-12-05"
+---
+
+```{r library}
+library(stringr)
+library(readr)
+```
+
+```{r import}
+# Set the file path
+file_path <- "day3_input.txt"
+# Read the file using readLines()
+file_content <- readLines(file_path)
+# Collapse the lines into a single string
+file_string <- paste(file_content, collapse = "\n")
+str <- toString(file_string)
+
+# Set the file path
+file_path <- "day3_test_input.txt"
+# Read the file using readLines()
+file_content <- readLines(file_path)
+# Collapse the lines into a single string
+file_string_test <- paste(file_content, collapse = "\n")
+str_test <- toString(file_string_test)
+```
+
+```{r functions}
+
+mullitover <- function(input_str){
+  
+  output <- str_match_all(input_str,"mul\\(\\s*(.*?)\\s*\\)")
+  check_str <- c("m","u","l","\\(",",","\\)")
+  
+  sol <- matrix(0, nrow = length(output[[1]][,1]), ncol = 1)
+  
+  for (i in 1:length(output[[1]][,1])) {
+    
+    init_i <- output[[1]][i,1]
+    split_init <- str_extract_all(init_i, boundary("character"))
+    #check if non-alphanumeric data exists
+    anum_bool <- !is.na(as.numeric(split_init[[1]]))
+    if (sum(anum_bool) != 6){
+      split_init_1 <- split_init
+      split_init_2 <- split_init
+      
+      split_init_1[[1]][length(split_init_1[[1]])] <- "*"
+      split_init_2[[1]][1] <- "*"
+      
+      split_init_1 <- paste(split_init_1[[1]], collapse="")
+      split_init_2 <- paste(split_init_2[[1]], collapse="")
+      
+      output1 <- str_match_all(split_init_1,"mul\\(\\s*(.*?)\\s*\\)")
+      output2 <- str_match_all(split_init_2,"mul\\(\\s*(.*?)\\s*\\)")
+      
+      if (length(output1[[1]]) == 0){
+        init_i <- output2
+        split_init <- str_extract_all(init_i[[1]][1], boundary("character"))
+      } else if (length(output2[[1]]) == 0 ){
+        init_i <- output1
+        split_init <- str_extract_all(init_i[[1]][1], boundary("character"))
+      }
+    }
+    
+    
+    len_split_init <- length(split_init[[1]])
+    
+    #check if valid format with no extraneous characters
+    str_test <- str_detect(init_i,check_str)
+    len_str_test <- length(str_test)
+    num_bool <- !is.na(as.numeric(split_init[[1]]))
+    num_init <- split_init[[1]][num_bool]
+    num_count <- length(num_init)
+    
+    check <- len_str_test + num_count
+    
+    if (len_split_init == check){
+      num_split <- str_split(init_i,",")
+      nums <- parse_number(num_split[[1]])
+      result <- nums[1]*nums[2]
+      sol[i] <- result
+    }
+  }
+  
+  ans <- sum(sol)
+  return(ans)
+}
+
+
+```
+
+```{r main}
+result_pt1 <- safety_assessment(df) 
+result_pt1 # answer = 246
+
+result_pt2 <- problem_dampener(df) + safety_assessment(df)
+result_pt2 # answer = ???
+```
+
+```{r tests}
+result_test_pt1 <- safety_assessment(df_test)
+result_test_pt1 # answer = 2
+
+result_test_pt2 <- problem_dampener(df_test) + safety_assessment(df_test)
+result_test_pt2 # answer = 269,264
+```
