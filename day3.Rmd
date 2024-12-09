@@ -28,6 +28,31 @@ str_test <- toString(file_string_test)
 
 ```{r functions}
 
+cond_discover <- function(input_str){
+  output <- str_match_all(input_str,"mul\\(\\s*(.*?)\\s*\\)")
+  output_do <- str_match_all(input_str,"do\\(\\)\\s*(.*?)\\s*don't\\(\\)")
+  output_dont <- str_match_all(input_str,"don't\\(\\)\\s*(.*?)\\s*do\\(\\)")
+  
+  sol_do <- matrix(0, nrow = length(output_do[[1]][,1]), ncol = 1)
+  sol_dont <- matrix(0, nrow = length(output_dont[[1]][,1]), ncol = 1)
+  sol <- matrix(0, nrow = length(output[[1]][1:24,2]), ncol = 1)
+  
+  for (i in 1:length(output_dont[[1]][,1])) {
+    muls <- mul_discover(output_dont[[1]][i,2])
+    sol_dont[i] <- mullitover_calc(muls)
+  }
+  
+  for (i in 1:length(output_dont[[1]][,1])) {
+    muls <- mul_discover(output_dont[[1]][i,2])
+    sol_do[i] <- mullitover_calc(muls)
+  }
+
+  total <- sum(sol)+sum(sol_do)
+  
+  return(sum(sol_dont))
+}
+
+
 mul_discover <- function(input_str){
   
   output <- str_match_all(input_str,"mul\\(\\s*(.*?)\\s*\\)")
@@ -35,8 +60,9 @@ mul_discover <- function(input_str){
   num_let_par <- c("[:alnum:]",",","\\)","\\(")
   check_para_true <- c("[:digit:]",",")
   check_para_false <- c("[:alpha:]")
-  check_extra <- c("[:cntrl:]")
-  #i=276, 345
+  check_punc_space <- c("[:punct:]","[:space:]")
+  check_astx <- c("\\*")
+
   for (i in 1:length(output[[1]][,1])) {
     init_i <- output[[1]][i,1]
     test_i <- str_detect(init_i,num_let_par)
@@ -45,14 +71,24 @@ mul_discover <- function(input_str){
     init_p <- output[[1]][i,2]
     test_p_t <- str_detect(init_p,check_para_true)
     test_p_f <- str_detect(init_p,check_para_false)
-    test_e <- str_detect(init_p,check_extra)
+    test_e <- str_detect(init_p,check_punc_space)
     
     
     if (sum(test_i) == 4 && sum(test_p_t) == 2 && sum(test_p_f) == 0){
       mul_test <- str_match_all(init_p,"mul\\(\\s*(.*?)\\s*,")
       
       if (length(mul_test[[1]]) == 0){
-        #do nothing
+        if (sum(test_e) == 1){
+          if (str_detect(init_p,check_astx) == TRUE){
+            output[[1]][i,1] <- 0
+            output[[1]][i,2] <- 0
+          } else if (str_detect(init_p,check_astx) == FALSE){
+            #do nothing
+          }
+        } else if (sum(test_e) != 1){
+          output[[1]][i,1] <- 0
+          output[[1]][i,2] <- 0
+        }
       } else if (length(mul_test[[1]]) != 0){
         split_init <- str_extract_all(init_i, boundary("character"))
         split_init_1 <- split_init
@@ -126,8 +162,7 @@ mullitover_calc <- function(input){
       }
     }
     
-    ans <- sum(sol) - (601*954)-(393*48)
-    #hardcoded the last two conditions
+    ans <- sum(sol) 
     return(ans)
   }
 
@@ -138,17 +173,13 @@ mullitover_calc <- function(input){
 ```
 
 ```{r main}
-result_pt1 <- safety_assessment(df) 
-result_pt1 # answer = 246
+result_pt1 <- mullitover_calc(mul_discover(str)) 
+result_pt1 # answer = 164730528
 
-result_pt2 <- problem_dampener(df) + safety_assessment(df)
-result_pt2 # answer = ???
+result_pt2 <- cond_discover(str)
+result_pt2 # answer = 50691713 too low, 108299376 too high
 ```
 
 ```{r tests}
-result_test_pt1 <- safety_assessment(df_test)
-result_test_pt1 # answer = 2
 
-result_test_pt2 <- problem_dampener(df_test) + safety_assessment(df_test)
-result_test_pt2 # answer = 269,264
 ```
