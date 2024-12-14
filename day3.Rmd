@@ -24,19 +24,27 @@ file_content <- readLines(file_path)
 # Collapse the lines into a single string
 file_string_test <- paste(file_content, collapse = "\n")
 str_test <- toString(file_string_test)
+
+# Set the file path
+file_path <- "day3_input_trunk.txt"
+# Read the file using readLines()
+file_content <- readLines(file_path)
+# Collapse the lines into a single string
+file_string_test <- paste(file_content, collapse = "\n")
+str_trunk <- toString(file_string_test)
 ```
 
 ```{r functions}
 
 cond_discover <- function(input_str){
+  
   output <- str_match_all(input_str,"mul\\(\\s*(.*?)\\s*\\)")
   output_do <- str_match_all(input_str,"do\\(\\)\\s*(.*?)\\s*don't\\(\\)")
   output_dont <- str_match_all(input_str,"don't\\(\\)\\s*(.*?)\\s*do\\(\\)")
   
   sol_do <- matrix(0, nrow = length(output_do[[1]][,1]), ncol = 1)
   sol_dont <- matrix(0, nrow = length(output_dont[[1]][,1]), ncol = 1)
-  sol <- matrix(0, nrow = length(output[[1]][1:24,2]), ncol = 1)
-  
+
   for (i in 1:length(output_dont[[1]][,1])) {
     muls <- mul_discover(output_dont[[1]][i,2])
     sol_dont[i] <- mullitover_calc(muls)
@@ -47,9 +55,10 @@ cond_discover <- function(input_str){
     sol_do[i] <- mullitover_calc(muls)
   }
 
-  total <- sum(sol)+sum(sol_do)
+  #start <- mullitover_calc(mul_discover(str_turnk)) 
+  #total <- start+sum(sol_do)
   
-  return(sum(sol_dont))
+  return(sum(sol_do))
 }
 
 
@@ -177,7 +186,7 @@ result_pt1 <- mullitover_calc(mul_discover(str))
 result_pt1 # answer = 164730528
 
 result_pt2 <- cond_discover(str)
-result_pt2 # answer = 50691713 too low, 108299376 too high
+result_pt2 # answer = 50691713 too low, 108299376 too high (1:25 = 5774990)
 ```
 
 ```{r tests}
