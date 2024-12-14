@@ -24,6 +24,7 @@ file_content <- readLines(file_path)
 
 ```{r functions}
 
+#Part 1
 #forward instances
 output_fwd <- str_match_all(file_content,"XMAS")
 fwd_count <- 0
@@ -114,16 +115,66 @@ vert_count_up <- 0
      }
  }
 
-total <- fwd_count + bkw_count + 
+pt1_total <- fwd_count + bkw_count + 
           vert_count_down + vert_count_up + 
             diag_count_up_right + diag_count_up_left + 
               diag_count_down_left + diag_count_down_right
+
+
 
 
 ```
 
 ```{r main}
 
+# Part 2
+
+#X-MAS instances
+mas_type1 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "M") && (split_init[[i]][j+2] == "S") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "M") && (split_init[[i+2]][j+2] == "S")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+mas_type2 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "M") && (split_init[[i]][j+2] == "M") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "S") && (split_init[[i+2]][j+2] == "S")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+mas_type3 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "S") && (split_init[[i]][j+2] == "M") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "S") && (split_init[[i+2]][j+2] == "M")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+mas_type4 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "S") && (split_init[[i]][j+2] == "S") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "M") && (split_init[[i+2]][j+2] == "M")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+pt2_total <- mas_type1 + mas_type2 + mas_type3 + mas_type4
 
 ```
 
