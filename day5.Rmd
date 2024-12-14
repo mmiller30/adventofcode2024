@@ -1,0 +1,189 @@
+---
+title: "day3"
+date: "2024-12-05"
+---
+
+```{r library}
+library(stringr)
+library(readr)
+library(sjmisc)
+```
+
+```{r import}
+# Set the file path
+file_path <- "day5_input.txt"
+# Read the file using readLines()
+file_content <- readLines(file_path)
+
+rules <- file_content[1:1176]
+pages <- file_content[1178:1359]
+
+# Set the file path
+file_path_test <- "day5_test_input.txt"
+# Read the file using readLines()
+file_content_test <- readLines(file_path_test)
+
+rules_test <- file_content_test[1:21]
+pages_test <- file_content_test[23:28]
+
+```
+
+```{r functions}
+
+#Part 1
+#forward instances
+output_fwd <- str_match_all(file_content,"XMAS")
+fwd_count <- 0
+
+for (i in 1:length(output_fwd)){
+  if (!is_empty(output_fwd[i])) {
+    fwd_count <- fwd_count + length(output_fwd[[i]])
+  }
+
+}
+
+#backward instances
+output_bkw <- str_match_all(file_content,"SAMX")
+bkw_count <- 0
+
+for (i in 1:length(output_bkw)){
+  if (!is_empty(output_bkw[i])) {
+    bkw_count <- bkw_count + length(output_bkw[[i]])
+  }
+
+}
+
+
+split_init <- str_extract_all(file_content, boundary("character"))
+
+#diagonal down and right instances
+diag_count_down_right <- 0
+ for (i in 1:(length(file_content)-3)){
+   for (j in 1:(length(split_init[[1]])-3)){
+     if ((split_init[[i]][j] == "X") && (split_init[[i+1]][j+1] == "M") && 
+        (split_init[[i+2]][j+2] == "A") && (split_init[[i+3]][j+3] == "S")){
+        diag_count_down_right <- diag_count_down_right + 1
+        }
+     }
+ }
+
+#diagonal down and left instances
+diag_count_down_left <- 0
+ for (i in 1:(length(file_content)-3)){
+   for (j in 4:(length(split_init[[1]]))){
+     if ((split_init[[i]][j] == "X") && (split_init[[i+1]][j-1] == "M") && 
+        (split_init[[i+2]][j-2] == "A") && (split_init[[i+3]][j-3] == "S")){
+        diag_count_down_left <- diag_count_down_left + 1
+        }
+     }
+ }
+
+#diagonal up and left instances
+diag_count_up_left <- 0
+ for (i in 4:length(file_content)){
+   for (j in 4:length(split_init[[1]])){
+     if ((split_init[[i]][j] == "X") && (split_init[[i-1]][j-1] == "M") && 
+        (split_init[[i-2]][j-2] == "A") && (split_init[[i-3]][j-3] == "S")){
+        diag_count_up_left <- diag_count_up_left + 1
+        }
+     }
+ }
+
+#diagonal up and left instances
+diag_count_up_right <- 0
+ for (i in 4:length(file_content)){
+   for (j in 1:(length(split_init[[1]])-3)){
+     if ((split_init[[i]][j] == "X") && (split_init[[i-1]][j+1] == "M") && 
+        (split_init[[i-2]][j+2] == "A") && (split_init[[i-3]][j+3] == "S")){
+        diag_count_up_right <- diag_count_up_right + 1
+        }
+     }
+ }
+
+#vertical instances
+vert_count_down <- 0
+ for (i in 1:(length(file_content)-3)){
+   for (j in 1:length(split_init[[1]])){
+     if ((split_init[[i]][j] == "X") && (split_init[[i+1]][j] == "M") && 
+        (split_init[[i+2]][j] == "A") && (split_init[[i+3]][j] == "S")){
+        vert_count_down <- vert_count_down + 1
+        }
+     }
+ }
+
+vert_count_up <- 0
+ for (i in 4:length(file_content)){
+   for (j in 1:length(split_init[[1]])){
+     if ((split_init[[i]][j] == "X") && (split_init[[i-1]][j] == "M") && 
+        (split_init[[i-2]][j] == "A") && (split_init[[i-3]][j] == "S")){
+        vert_count_up <- vert_count_up + 1
+        }
+     }
+ }
+
+pt1_total <- fwd_count + bkw_count + 
+          vert_count_down + vert_count_up + 
+            diag_count_up_right + diag_count_up_left + 
+              diag_count_down_left + diag_count_down_right
+
+
+
+
+```
+
+```{r main}
+
+# Part 2
+
+#X-MAS instances
+mas_type1 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "M") && (split_init[[i]][j+2] == "S") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "M") && (split_init[[i+2]][j+2] == "S")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+mas_type2 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "M") && (split_init[[i]][j+2] == "M") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "S") && (split_init[[i+2]][j+2] == "S")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+mas_type3 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "S") && (split_init[[i]][j+2] == "M") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "S") && (split_init[[i+2]][j+2] == "M")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+mas_type4 <- 0
+ for (i in 1:(length(file_content)-2)){
+   for (j in 1:(length(split_init[[1]])-2)){
+     if ((split_init[[i]][j] == "S") && (split_init[[i]][j+2] == "S") && 
+                  (split_init[[i+1]][j+1] == "A") && 
+        (split_init[[i+2]][j] == "M") && (split_init[[i+2]][j+2] == "M")){
+        mas_type1 <- mas_type1 + 1
+        }
+     }
+ }
+
+pt2_total <- mas_type1 + mas_type2 + mas_type3 + mas_type4
+
+```
+
+```{r tests}
+
+```
