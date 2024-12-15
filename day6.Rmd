@@ -26,7 +26,7 @@ file_content_test <- readLines(file_path_test)
 ```{r functions}
 #Part 1
 
-input_split <- str_extract_all(file_content_test, boundary("character"))
+map <- str_extract_all(file_content_test, boundary("character"))
 direction <- c("\\^","v","\\>","\\<")
 wall <- c("#")
 
@@ -57,7 +57,7 @@ find_guard_details <- function(input, direction){
 
 
 #Up Wall solver
-motion_up <- function(input){
+motion_up <- function(guard_input, map, direction){
   motion <- c("Move","Stop")
   walls_along_route <- vector(mode = "list", length = input$y_loc)
     for (i in 1:input$y_loc){
@@ -73,7 +73,12 @@ motion_up <- function(input){
   first_stop <- max(which(lengths(find_all_stops)!=0))
   total_moves_up <- test$y_loc - 1 - first_stop
   new_y_loc <- input$y_loc - total_moves_up
+  
+  map[[input_$y_loc]][input$x_loc] <- "."
+  map[[new_y_loc]][input$x_loc] <- direction[3]
+  
   return(list(y_loc = new_y_loc, x_loc = input$x_loc, dir = "Right", 
+              map <- map,
               positions = (input$positions + total_moves_up)))
 }
 
