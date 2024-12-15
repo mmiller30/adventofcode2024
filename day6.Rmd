@@ -52,20 +52,52 @@ find_guard_details <- function(input, direction){
     }
   }
  
- return(list(y_loc = y, x_loc = x, direction = dir))
+ return(list(y_loc = y, x_loc = x, direction = dir, positions = 1))
 }
 
 
 #Up Wall solver
-walls_along_route <- vector(mode = "list", length = test$y_loc)
-for (i in 1:test$y_loc){
-  wall_x <- str_match_all(input_split[[i]][test$x_loc],wall)
-    if (is_empty(wall_x)) {
-        walls_along_route[[i]] <- "Move"
-    } else if (!is_empty(wall_x)){
-        walls_along_route[[i]] <- "Wall"
+motion_up <- function(input){
+  motion <- c("Move","Stop")
+  walls_along_route <- vector(mode = "list", length = input$y_loc)
+    for (i in 1:input$y_loc){
+      wall_x <- str_match_all(input_split[[i]][input$x_loc],wall)
+        if (is_empty(wall_x)) {
+            walls_along_route[[i]] <- "Move"
+        } else if (!is_empty(wall_x)){
+            walls_along_route[[i]] <- "Stop"
+        }
     }
+  
+  find_all_stops <- str_match_all(walls_along_route,"Stop")
+  first_stop <- max(which(lengths(find_all_stops)!=0))
+  total_moves_up <- test$y_loc - 1 - first_stop
+  new_y_loc <- input$y_loc - total_moves_up
+  return(list(y_loc = new_y_loc, x_loc = input$x_loc, dir = "Right", 
+              positions = (input$positions + total_moves_up)))
 }
+
+#Right Wall solver
+motion_right <- function(input){
+  motion <- c("Move","Stop")
+  walls_along_route <- vector(mode = "list", length = input$x_loc)
+    for (i in 1:input$y_loc){
+      wall_x <- str_match_all(input_split[[i]][input$x_loc],wall)
+        if (is_empty(wall_x)) {
+            walls_along_route[[i]] <- "Move"
+        } else if (!is_empty(wall_x)){
+            walls_along_route[[i]] <- "Stop"
+        }
+    }
+  
+  find_all_stops <- str_match_all(walls_along_route,"Stop")
+  first_stop <- min(which(lengths(find_all_stops)!=0))
+  total_moves_up <- test$y_loc - 1 - first_stop
+  new_y_loc <- input$y_loc - total_moves_up
+  return(list(y_loc = new_y_loc, x_loc = input$x_loc, dir = "Right", 
+              positions = (input$positions + total_moves_up)))
+}
+
 
 
 
