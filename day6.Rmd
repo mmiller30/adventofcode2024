@@ -11,26 +11,53 @@ library(sjmisc)
 
 ```{r import}
 # Set the file path
-file_path <- "day5_input.txt"
+file_path <- "day6_input.txt"
 # Read the file using readLines()
 file_content <- readLines(file_path)
 
-rules <- file_content[1:1176]
-pages <- file_content[1178:1359]
-
 # Set the file path
-file_path_test <- "day5_test_input.txt"
+file_path_test <- "day6_test_input.txt"
 # Read the file using readLines()
 file_content_test <- readLines(file_path_test)
 
-rules_test <- file_content_test[1:21]
-pages_test <- file_content_test[23:28]
 
 ```
 
 ```{r functions}
-start.time <- Sys.time()
 #Part 1
+
+direction <- c("\\^","v","\\>","\\<")
+
+find_guard_details <- function(input, direction){
+  for (i in 1:length(direction)){
+    find_guard_y <- str_match_all(file_content_test,direction[i])
+    test <- which(lengths(find_guard_y)!=0)
+    
+    if (!is_empty(test)){
+      y <- which(lengths(find_guard_y)!=0)
+      row_y_split <- str_extract_all(file_content_test[y], boundary("character"))
+      find_guard_x <- str_match_all(row_y_split[[1]],direction[i])
+      x <- which(lengths(find_guard_x)!=0)
+      if ( i == 1){
+        dir <- "Up"
+      } else if ( i == 2){
+        dir <- "Down"
+      } else if ( i == 3){
+        dir <- "Right"
+      } else if ( i == 4){
+        dir <- "Left"
+      }
+    }
+  }
+ 
+ return(list(y_loc = y, x_loc = x, direction = dir))
+}
+
+
+
+
+start.time <- Sys.time()
+
 pages_split <- str_split(pages,",")
 rules_split <- str_split(rules,"\\|")
 
