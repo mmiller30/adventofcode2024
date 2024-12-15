@@ -31,6 +31,47 @@ pages_test <- file_content_test[23:28]
 ```{r functions}
 
 #Part 1
+
+pages_split <- str_split(pages_test,",")
+rules_split <- str_split(rules_test,"\\|")
+
+x <- str_match_all(pages_split[[1]],rules_split[[1]][1])
+y <- str_match_all(pages_split[[1]],rules_split[[1]][2])
+
+logicals <- vector(mode = "list", length = length(pages_split))
+tests <- vector(mode = "list", length = length(rules_split))
+
+violate_flag <- FALSE
+#diagonal up and left instances
+for (i in 1:length(pages_split)){
+  
+  for (j in 1:length(pages_split[[i]])){
+    
+    for (k in 1:length(rules_split)){
+      x <- str_match_all(pages_split[[i]],rules_split[[k]][1])
+      y <- str_match_all(pages_split[[i]],rules_split[[k]][2])
+      
+      x_id <- which(lengths(x)!=0)
+      y_id <- which(lengths(y)!=0)
+      
+        if ((identical(x_id, integer(0))) | (identical(y_id, integer(0)))) {
+              violate_flag <- FALSE
+              logicals[[i]] <- "Valid"
+        } else if (x_id < y_id){
+              violate_flag <- FALSE
+              logicals[[i]] <- "Valid"
+        } else if (x_id > y_id){
+              violate_flag <- TRUE
+              break
+        }
+      
+      if (isTRUE(violate_flag)){
+        logicals[[i]] <- "Violated Rules"
+        break
+      }
+    }
+  }
+}
 #forward instances
 output_fwd <- str_match_all(file_content,"XMAS")
 fwd_count <- 0
