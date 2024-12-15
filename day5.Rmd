@@ -29,7 +29,7 @@ pages_test <- file_content_test[23:28]
 ```
 
 ```{r functions}
-
+start.time <- Sys.time()
 #Part 1
 pages_split <- str_split(pages,",")
 rules_split <- str_split(rules,"\\|")
@@ -77,19 +77,75 @@ for (i in 1:length(valid_pages)){
 }
 
 pt1_solution <- totals
-
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
 ```
 
 ```{r main}
-
+start.time <- Sys.time()
 # Part 2
 invalid_ind <- str_match_all(logicals,"Violated Rules")
 invalid_pages <- pages_split[which(lengths(invalid_ind)!=0)]
+corrected_pages <- invalid_pages
 
-
-
-```
-
-```{r tests}
-
+logicals <- vector(mode = "list", length = length(invalid_pages))
+violate_flag <- FALSE
+diff <- 1
+count <- 0
+while (diff != 0){
+  for (i in 1:length(invalid_pages)){
+    
+    for (j in 1:length(invalid_pages[[i]])){
+      
+      for (k in 1:length(rules_split)){
+        x <- str_match_all(invalid_pages[[i]],rules_split[[k]][1])
+        y <- str_match_all(invalid_pages[[i]],rules_split[[k]][2])
+        
+        x_id <- which(lengths(x)!=0)
+        y_id <- which(lengths(y)!=0)
+        
+          if ((identical(x_id, integer(0))) | (identical(y_id, integer(0)))) {
+                violate_flag <- FALSE
+                logicals[[i]] <- "Valid"
+          } else if (x_id < y_id){
+                violate_flag <- FALSE
+                logicals[[i]] <- "Valid"
+          } else if (x_id > y_id){
+                violate_flag <- TRUE
+                corrected_pages[[i]][x_id] <- invalid_pages[[i]][y_id]
+                corrected_pages[[i]][y_id] <- invalid_pages[[i]][x_id]
+                break
+          }
+      }
+        
+      if (isTRUE(violate_flag)){
+        logicals[[i]] <- "Violated Rules"
+        break
+      }
+    }
+  }
+  
+  corrected_totals <- 0
+  for (i in 1:length(corrected_pages)){
+    temp <- ceiling(length(corrected_pages[[i]])/2)
+    corrected_totals <- corrected_totals + as.integer(corrected_pages[[i]][temp])
+  }
+  
+  invalid_totals <- 0
+  for (i in 1:length(invalid_pages)){
+    temp <- ceiling(length(invalid_pages[[i]])/2)
+    invalid_totals <- invalid_totals + as.integer(invalid_pages[[i]][temp])
+  }
+  
+  diff <- corrected_totals - invalid_totals
+  
+  invalid_pages <- corrected_pages
+  count <- count + 1
+}
+  
+pt2_solution <- corrected_totals
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
 ```
