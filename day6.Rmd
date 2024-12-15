@@ -26,208 +26,249 @@ file_content_test <- readLines(file_path_test)
 ```{r functions}
 #Part 1
 
-map <- str_extract_all(file_content_test, boundary("character"))
+input_map <- file_content_test
+
 direction <- c("\\^","v","\\>","\\<")
 wall <- c("#")
+dist_pos <- 1
+count <- 0
+off_map_flag <- FALSE
 
-find_guard_details <- function(input, direction){
+find_guard_details <- function(input_map, direction, dist_pos){
   for (i in 1:length(direction)){
-    find_guard_y <- str_match_all(file_content_test,direction[i])
+    find_guard_y <- str_match_all(input_map,direction[i])
     test <- which(lengths(find_guard_y)!=0)
     
     if (!is_empty(test)){
       y <- which(lengths(find_guard_y)!=0)
-      row_y_split <- str_extract_all(file_content_test[y], boundary("character"))
+      row_y_split <- str_extract_all(input_map[y], boundary("character"))
       find_guard_x <- str_match_all(row_y_split[[1]],direction[i])
       x <- which(lengths(find_guard_x)!=0)
       if ( i == 1){
-        dir <- "Up"
+        dir <- "^" #up
       } else if ( i == 2){
-        dir <- "Down"
+        dir <- "v" #down
       } else if ( i == 3){
-        dir <- "Right"
+        dir <- ">" #right
       } else if ( i == 4){
-        dir <- "Left"
+        dir <- "<" #left
       }
     }
   }
  
- return(list(y_loc = y, x_loc = x, direction = dir, positions = 1))
+ return(list(y_loc = y, x_loc = x, direction = dir, 
+             dist_pos = dist_pos))
 }
 
-
-#Up Wall solver
-motion_up <- function(guard_input, map, direction){
+#Motion Up solver
+motion_up <- function(guard_details_input, input_map, direction){
   motion <- c("Move","Stop")
-  walls_along_route <- vector(mode = "list", length = input$y_loc)
-    for (i in 1:input$y_loc){
-      wall_x <- str_match_all(input_split[[i]][input$x_loc],wall)
-        if (is_empty(wall_x)) {
-            walls_along_route[[i]] <- "Move"
-        } else if (!is_empty(wall_x)){
-            walls_along_route[[i]] <- "Stop"
-        }
+  input_map_extract <- str_extract_all(input_map, boundary("character"))
+  walls_along_route <- vector(mode = "list", length = guard_details_input$y_loc)
+    
+  for (i in 1:guard_details_input$y_loc){
+    wall_x <- str_match_all(input_map_extract[[i]][guard_details_input$x_loc],wall)
+      if (is_empty(wall_x)) {
+          walls_along_route[[i]] <- "Move"
+      } else if (!is_empty(wall_x)){
+          walls_along_route[[i]] <- "Stop"
+      }
     }
-  
+
   find_all_stops <- str_match_all(walls_along_route,"Stop")
-  first_stop <- max(which(lengths(find_all_stops)!=0))
-  total_moves_up <- test$y_loc - 1 - first_stop
-  new_y_loc <- input$y_loc - total_moves_up
   
-  map[[input_$y_loc]][input$x_loc] <- "."
-  map[[new_y_loc]][input$x_loc] <- direction[3]
+  if (is_empty(find_all_stops)){
+    off_map_flag <- TRUE
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), off_map_flag = off_map_flag))
+    break
+  } else if (!is_empty(find_all_stops)){
   
-  return(list(y_loc = new_y_loc, x_loc = input$x_loc, dir = "Right", 
-              map <- map,
-              positions = (input$positions + total_moves_up)))
+    first_stop <- max(which(lengths(find_all_stops)!=0))
+    total_moves_up <- guard_details_input$y_loc - 1 - first_stop
+    new_y_loc <- guard_details_input$y_loc - total_moves_up
+    
+    input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
+    input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- ">"
+    
+      for (i in 1:length(input_map_extract)){
+        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
+      }
+    
+    return(list(y_loc = new_y_loc, x_loc = guard_details_input$x_loc, dir = ">", 
+                input_map = input_map,
+                dist_pos = (guard_details_input$dist_pos + total_moves_up),
+                off_map_flag <- FALSE))
+    }
 }
 
-#Right Wall solver
-motion_right <- function(input){
+#Motion Right solver
+motion_right <- function(guard_details_input, input_map, direction){
   motion <- c("Move","Stop")
-  walls_along_route <- vector(mode = "list", length = input$x_loc)
-    for (i in 1:input$y_loc){
-      wall_x <- str_match_all(input_split[[i]][input$x_loc],wall)
-        if (is_empty(wall_x)) {
-            walls_along_route[[i]] <- "Move"
-        } else if (!is_empty(wall_x)){
-            walls_along_route[[i]] <- "Stop"
-        }
+  input_map_extract <- str_extract_all(input_map, boundary("character"))
+  walls_along_route <- vector(mode = "list", length = guard_details_input$x_loc)
+    
+  for (i in 1:guard_details_input$x_loc){
+    wall_x <- str_match_all(input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc+i],wall)
+      if (is_empty(wall_x)) {
+          walls_along_route[[i]] <- "Move"
+      } else if (!is_empty(wall_x)){
+          walls_along_route[[i]] <- "Stop"
+      }
     }
-  
+
   find_all_stops <- str_match_all(walls_along_route,"Stop")
-  first_stop <- min(which(lengths(find_all_stops)!=0))
-  total_moves_up <- test$y_loc - 1 - first_stop
-  new_y_loc <- input$y_loc - total_moves_up
-  return(list(y_loc = new_y_loc, x_loc = input$x_loc, dir = "Right", 
-              positions = (input$positions + total_moves_up)))
+  
+  if (is_empty(find_all_stops)){
+    off_map_flag <- TRUE
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), off_map_flag = off_map_flag))
+    break
+  } else if (!is_empty(find_all_stops)){
+  
+    first_stop <- min(which(lengths(find_all_stops)!=0))
+    total_moves_right <- first_stop - 1
+    new_x_loc <- guard_details_input$x_loc + total_moves_right
+    
+    input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
+    input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "v"
+    
+      for (i in 1:length(input_map_extract)){
+        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
+      }
+    
+    return(list(y_loc = guard_details_input$y_loc, x_loc = new_x_loc, dir = "v", 
+                input_map = input_map,
+                dist_pos = (guard_details_input$dist_pos + total_moves_right),
+                off_map_flag <- FALSE))
+    }
 }
 
+#Motion Down solver
+motion_down <- function(guard_details_input, input_map, direction){
+  motion <- c("Move","Stop")
+  input_map_extract <- str_extract_all(input_map, boundary("character"))
+  walls_along_route <- vector(mode = "list", length = length(input_map))
 
+  for (i in (guard_details_input$y_loc+1):length(input_map2)){
+    wall_x <- str_match_all(input_map_extract[[i]][guard_details_input$x_loc],wall)
+      if (is_empty(wall_x)) {
+          walls_along_route[[i]] <- "Move"
+      } else if (!is_empty(wall_x)){
+          walls_along_route[[i]] <- "Stop"
+      }
+    }
 
+  find_all_stops <- str_match_all(walls_along_route,"Stop")
+  
+  if (is_empty(find_all_stops)){
+    off_map_flag <- TRUE
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), off_map_flag = off_map_flag))
+    break
+  } else if (!is_empty(find_all_stops)){
+  
+    first_stop <- min(which(lengths(find_all_stops)!=0))
+    total_moves_down <-  first_stop - guard_details_input$y_loc - 1
+    new_y_loc <- total_moves_down + guard_details_input$y_loc
+    
+    input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
+    input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- "<"
+    
+      for (i in 1:length(input_map_extract)){
+        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
+      }
+    
+    return(list(y_loc = new_y_loc, x_loc = guard_details_input$x_loc, dir = "<", 
+                input_map = input_map,
+                dist_pos = (guard_details_input$dist_pos + total_moves_down),
+                off_map_flag <- FALSE))
+    }
+}
+
+#Motion Left solver
+motion_left <- function(guard_details_input, input_map, direction){
+  motion <- c("Move","Stop")
+  input_map_extract <- str_extract_all(input_map, boundary("character"))
+  walls_along_route <- vector(mode = "list", length = guard_details_input$x_loc)
+    
+  for (i in 1:(guard_details_input$x_loc-1)){
+    wall_x <- str_match_all(input_map_extract[[guard_details_input$y_loc]][i],wall)
+      if (is_empty(wall_x)) {
+          walls_along_route[[i]] <- "Move"
+      } else if (!is_empty(wall_x)){
+          walls_along_route[[i]] <- "Stop"
+      }
+    }
+
+  find_all_stops <- str_match_all(walls_along_route,"Stop")
+  
+  if (is_empty(find_all_stops)){
+    off_map_flag <- TRUE
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), off_map_flag = off_map_flag))
+    break
+  } else if (!is_empty(find_all_stops)){
+  
+    first_stop <- max(which(lengths(find_all_stops)!=0))
+    total_moves_left <- guard_details_input$x_loc - first_stop - 1
+    new_x_loc <- guard_details_input$x_loc - total_moves_left
+    
+    input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
+    input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "^"
+    
+      for (i in 1:length(input_map_extract)){
+        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
+      }
+    
+    return(list(y_loc = guard_details_input$y_loc, x_loc = new_x_loc, dir = "^", 
+                input_map = input_map,
+                dist_pos = (guard_details_input$dist_pos + total_moves_right),
+                off_map_flag <- FALSE))
+    }
+}
 
 start.time <- Sys.time()
-
-pages_split <- str_split(pages,",")
-rules_split <- str_split(rules,"\\|")
-
-logicals <- vector(mode = "list", length = length(pages_split))
-violate_flag <- FALSE
-#diagonal up and left instances
-for (i in 1:length(pages_split)){
+while (isFALSE(off_map_flag)){
+  guard_details <- find_guard_details(input_map, direction, dist_pos)
   
-  for (j in 1:length(pages_split[[i]])){
+  if (guard_details$direction == "^"){
+    up <- motion_up(guard_details,input_map,direction)
     
-    for (k in 1:length(rules_split)){
-      x <- str_match_all(pages_split[[i]],rules_split[[k]][1])
-      y <- str_match_all(pages_split[[i]],rules_split[[k]][2])
-      
-      x_id <- which(lengths(x)!=0)
-      y_id <- which(lengths(y)!=0)
-      
-        if ((identical(x_id, integer(0))) | (identical(y_id, integer(0)))) {
-              violate_flag <- FALSE
-              logicals[[i]] <- "Valid"
-        } else if (x_id < y_id){
-              violate_flag <- FALSE
-              logicals[[i]] <- "Valid"
-        } else if (x_id > y_id){
-              violate_flag <- TRUE
-              break
-        }
-    }
-      
-    if (isTRUE(violate_flag)){
-      logicals[[i]] <- "Violated Rules"
-      break
-    }
+    input_map <- up$input_map
+    dist_pos <- up$dist_pos
+    off_map_flag <- up$off_map_flag
+    
+  } else if (guard_details$direction == "v"){
+    down <- motion_down(guard_details,input_map,direction)
+    
+    input_map <- down$input_map
+    dist_pos <- down$dist_pos
+    off_map_flag <- down$off_map_flag
+    
+  } else if (guard_details$direction == "<"){
+    left <- motion_left(guard_details,input_map,directions)
+    
+    input_map <- left$input_map
+    dist_pos <- left$dist_pos
+    off_map_flag <- left$off_map_flag
+    
+  } else if (guard_details$direction == ">"){
+    right <- motion_right(guard_details,input_map,direction)
+    
+    input_map <- right$input_map
+    dist_pos <- right$dist_pos
+    off_map_flag <- right$off_map_flag
   }
+  count <- count + 1
+  print(paste("Count",count))
 }
 
-valid_ind <- str_match_all(logicals,"Valid")
-valid_pages <- pages_split[which(lengths(valid_ind)!=0)]
 
-totals <- 0
-for (i in 1:length(valid_pages)){
-  temp <- ceiling(length(valid_pages[[i]])/2)
-  totals <- totals + as.integer(valid_pages[[i]][temp])
-}
-
-pt1_solution <- totals
+pt1_solution <- dist_pos
 end.time <- Sys.time()
 time.taken <- end.time - start.time
 time.taken
 ```
 
 ```{r main}
-start.time <- Sys.time()
-# Part 2
-invalid_ind <- str_match_all(logicals,"Violated Rules")
-invalid_pages <- pages_split[which(lengths(invalid_ind)!=0)]
-corrected_pages <- invalid_pages
 
-logicals <- vector(mode = "list", length = length(invalid_pages))
-violate_flag <- FALSE
-diff <- 1
-count <- 0
-valid_ck <- 1
-while (valid_ck != 0){
-  for (i in 1:length(invalid_pages)){
-    
-    for (j in 1:length(invalid_pages[[i]])){
-      
-      for (k in 1:length(rules_split)){
-        x <- str_match_all(invalid_pages[[i]],rules_split[[k]][1])
-        y <- str_match_all(invalid_pages[[i]],rules_split[[k]][2])
-        
-        x_id <- which(lengths(x)!=0)
-        y_id <- which(lengths(y)!=0)
-        
-          if ((identical(x_id, integer(0))) | (identical(y_id, integer(0)))) {
-                violate_flag <- FALSE
-                logicals[[i]] <- "Valid"
-          } else if (x_id < y_id){
-                violate_flag <- FALSE
-                logicals[[i]] <- "Valid"
-          } else if (x_id > y_id){
-                violate_flag <- TRUE
-                corrected_pages[[i]][x_id] <- invalid_pages[[i]][y_id]
-                corrected_pages[[i]][y_id] <- invalid_pages[[i]][x_id]
-                break
-          }
-      }
-        
-      if (isTRUE(violate_flag)){
-        logicals[[i]] <- "Violated Rules"
-        break
-      }
-    }
-  }
-  
-  corrected_totals <- 0
-  for (i in 1:length(corrected_pages)){
-    temp <- ceiling(length(corrected_pages[[i]])/2)
-    corrected_totals <- corrected_totals + as.integer(corrected_pages[[i]][temp])
-  }
-  
-  invalid_totals <- 0
-  for (i in 1:length(invalid_pages)){
-    temp <- ceiling(length(invalid_pages[[i]])/2)
-    invalid_totals <- invalid_totals + as.integer(invalid_pages[[i]][temp])
-  }
-  
-  diff <- corrected_totals - invalid_totals
-  valid_ck <- length(logicals) - sum(lengths(str_match_all(logicals,"Valid")))
-  
-  invalid_pages <- corrected_pages
-  count <- count + 1
-  print(paste("Count",count))
-  print(paste("Difference",diff))
-  print(paste("Logicals Valid Check Diff",valid_ck))
-}
-  
-pt2_solution <- corrected_totals
-end.time <- Sys.time()
-time.taken <- end.time - start.time
-time.taken
+# Part 2
+
 ```
