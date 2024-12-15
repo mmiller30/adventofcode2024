@@ -26,7 +26,9 @@ file_content_test <- readLines(file_path_test)
 ```{r functions}
 #Part 1
 
+input_split <- str_extract_all(file_content_test, boundary("character"))
 direction <- c("\\^","v","\\>","\\<")
+wall <- c("#")
 
 find_guard_details <- function(input, direction){
   for (i in 1:length(direction)){
@@ -53,6 +55,17 @@ find_guard_details <- function(input, direction){
  return(list(y_loc = y, x_loc = x, direction = dir))
 }
 
+
+#Up Wall solver
+walls_along_route <- vector(mode = "list", length = test$y_loc)
+for (i in 1:test$y_loc){
+  wall_x <- str_match_all(input_split[[i]][test$x_loc],wall)
+    if (is_empty(wall_x)) {
+        walls_along_route[[i]] <- "Move"
+    } else if (!is_empty(wall_x)){
+        walls_along_route[[i]] <- "Wall"
+    }
+}
 
 
 
