@@ -26,7 +26,7 @@ file_content_test <- readLines(file_path_test)
 ```{r functions}
 #Part 1
 
-input_map <- file_content_test
+input_map <- file_content
 
 direction <- c("\\^","v","\\>","\\<")
 wall <- c("#")
@@ -327,5 +327,107 @@ time.taken
 ```{r main}
 
 # Part 2
+obs_input_map_extract <- str_extract_all(input_map, boundary("character"))
+x_ids <- vector(mode = "list", length = length(input_map))
+
+for (i in 1:length(input_map)){
+    input_map_row <- str_match_all(input_map_extract[[i]],"X")
+    x_ids[[i]] <- which(lengths(input_map_row)!=0)
+    
+}
+
+alt_input_maps <- vector(mode = "list", length = 4967)
+count <- 0
+direction <- c("\\^","v","\\>","\\<")
+dist_pos <- 1
+
+for (i in 1:length(x_ids)){
+  for (j in 1:length(x_ids[[1]])){
+    
+    if (!identical(x_ids[[i]], integer(0))){
+      temp_map <- file_content
+      temp_map_extract <- str_extract_all(temp_map, boundary("character"))
+      temp_map_extract[[i]][x_ids[[i]][j]] <- "#"
+      
+      start_loc <- find_guard_details(temp_map,direction,dist_pos)
+      temp_map_extract[[start_loc$y_loc]][start_loc$x_loc] <- start_loc$direction
+      
+      for (k in 1:length(temp_map_extract)){
+        temp_map[[k]] <- paste(temp_map_extract[[k]], collapse="")
+      }
+    
+    count <- count + 1
+    alt_input_maps[[count]] <- temp_map
+      
+    }
+     
+  }  
+}
+
+
+start.time <- Sys.time()
+obstruction <- vector(mode = "list", length = 4967)
+inner_count <- 0
+off_map_flag <- FALSE
+
+for (i in 1:length(alt_input_maps)){
+  input_map_ob <- alt_input_maps[[i]]
+  #input_map_ob < file_content
+  while (isFALSE(off_map_flag)){
+    guard_details <- find_guard_details(input_map_ob, direction, dist_pos)
+    
+    if (guard_details$direction == "^"){
+      up <- motion_up(guard_details,input_map_ob,direction)
+      
+      input_map_ob <- up$input_map
+      dist_pos <- up$dist_pos
+      off_map_flag <- up$flag
+      
+    } else if (guard_details$direction == "v"){
+      down <- motion_down(guard_details,input_map_ob,direction)
+      
+      input_map_ob <- down$input_map
+      dist_pos <- down$dist_pos
+      off_map_flag <- down$flag
+      
+    } else if (guard_details$direction == "<"){
+      left <- motion_left(guard_details,input_map_ob,directions)
+      
+      input_map_ob <- left$input_map
+      dist_pos <- left$dist_pos
+      off_map_flag <- left$flag
+      
+    } else if (guard_details$direction == ">"){
+      right <- motion_right(guard_details,input_map_ob,direction)
+      
+      input_map_ob <- right$input_map
+      dist_pos <- right$dist_pos
+      off_map_flag <- right$flag
+    }
+    
+    #inner_count <- inner_count + 1
+    #print(paste("Count",inner_count))
+    
+    if (inner_count > 500){
+      break
+    }
+  }
+  
+     
+  if (inner_count > 500){
+    obstruction[[i]] <- "Looped"
+  } else if (!isFALSE(off_map_flag)){
+    obstruction[[i]] <- "Not"
+  }
+  inner_count <- 0 
+
+  print(paste("Alt Input",i))
+  print(paste("Result",obstruction[[i]]))
+}
+
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+
 
 ```
