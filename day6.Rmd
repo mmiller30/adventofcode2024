@@ -78,7 +78,8 @@ motion_up <- function(guard_details_input, input_map, direction){
   find_all_stops <- str_match_all(walls_along_route,"Stop")
   
   if (is_empty(find_all_stops)){
-    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), flag = TRUE))
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
+                input_map = input_map, flag = TRUE))
     break
   } else if (!is_empty(find_all_stops)){
   
@@ -104,9 +105,9 @@ motion_up <- function(guard_details_input, input_map, direction){
 motion_right <- function(guard_details_input, input_map, direction){
   motion <- c("Move","Stop")
   input_map_extract <- str_extract_all(input_map, boundary("character"))
-  walls_along_route <- vector(mode = "list", length = guard_details_input$x_loc)
+  walls_along_route <- vector(mode = "list", length = length(guard_details_input$x_loc:(length(input_map_extract[[1]])-1)))
     
-  for (i in 1:guard_details_input$x_loc){
+  for (i in 1:length(guard_details_input$x_loc:(length(input_map_extract[[1]])-1))){
     wall_x <- str_match_all(input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc+i],wall)
       if (is_empty(wall_x)) {
           walls_along_route[[i]] <- "Move"
@@ -118,7 +119,8 @@ motion_right <- function(guard_details_input, input_map, direction){
   find_all_stops <- str_match_all(walls_along_route,"Stop")
   
   if (is_empty(find_all_stops)){
-    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), flag = TRUE))
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
+                input_map = input_map, flag = TRUE))
     break
   } else if (!is_empty(find_all_stops)){
   
@@ -144,9 +146,9 @@ motion_right <- function(guard_details_input, input_map, direction){
 motion_down <- function(guard_details_input, input_map, direction){
   motion <- c("Move","Stop")
   input_map_extract <- str_extract_all(input_map, boundary("character"))
-  walls_along_route <- vector(mode = "list", length = length(input_map))
+  walls_along_route <- vector(mode = "list", length = length((guard_details_input$y_loc+1):length(input_map)))
 
-  for (i in (guard_details_input$y_loc+1):length(guard_details_input)){
+  for (i in ((guard_details_input$y_loc+1):length(input_map))){
     wall_x <- str_match_all(input_map_extract[[i]][guard_details_input$x_loc],wall)
       if (is_empty(wall_x)) {
           walls_along_route[[i]] <- "Move"
@@ -158,7 +160,8 @@ motion_down <- function(guard_details_input, input_map, direction){
   find_all_stops <- str_match_all(walls_along_route,"Stop")
   
   if (is_empty(find_all_stops)){
-    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), flag = TRUE))
+   return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
+                input_map = input_map, flag = TRUE))
     break
   } else if (!is_empty(find_all_stops)){
   
@@ -198,7 +201,8 @@ motion_left <- function(guard_details_input, input_map, direction){
   find_all_stops <- str_match_all(walls_along_route,"Stop")
   
   if (is_empty(find_all_stops)){
-    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)), flag = TRUE))
+    return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
+                input_map = input_map, flag = TRUE))
     break
   } else if (!is_empty(find_all_stops)){
   
@@ -215,7 +219,7 @@ motion_left <- function(guard_details_input, input_map, direction){
     
     return(list(y_loc = guard_details_input$y_loc, x_loc = new_x_loc, dir = "^", 
                 input_map = input_map,
-                dist_pos = (guard_details_input$dist_pos + total_moves_right),
+                dist_pos = (guard_details_input$dist_pos + total_moves_left),
                 flag = FALSE))
     }
 }
