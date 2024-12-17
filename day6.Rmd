@@ -9,6 +9,10 @@ library(readr)
 library(sjmisc)
 ```
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
 ```{r import}
 # Set the file path
 file_path <- "day6_input.txt"
@@ -94,13 +98,19 @@ motion_up <- function(guard_details_input, input_map, direction){
   
       first_stop <- max(which(lengths(find_all_stops)!=0))
       total_moves_up <- guard_details_input$y_loc - 1 - first_stop
-      new_y_loc <- guard_details_input$y_loc - total_moves_up
       
-      #input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "X"
-      input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- ">"
-      for (i in (new_y_loc+1):(guard_details_input$y_loc)){
-        input_map_extract[[i]][guard_details_input$x_loc] <- "X"
-      }
+      if (total_moves_up == 0){
+        new_y_loc <- guard_details_input$y_loc - total_moves_up
+        input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- ">"
+        
+      } else if (total_moves_up != 0){ 
+          new_y_loc <- guard_details_input$y_loc - total_moves_up
+          input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- ">"
+          for (i in (new_y_loc+1):(guard_details_input$y_loc)){
+            input_map_extract[[i]][guard_details_input$x_loc] <- "X"
+          }
+        }
+    
     
       for (i in 1:length(input_map_extract)){
         input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
@@ -146,14 +156,19 @@ motion_right <- function(guard_details_input, input_map, direction){
   } else if (!is_empty(find_all_stops)){
   
       first_stop <- min(which(lengths(find_all_stops)!=0))
+      
       total_moves_right <- first_stop - 1
-      new_x_loc <- guard_details_input$x_loc + total_moves_right
+      if (total_moves_right == 0){
+        new_x_loc <- guard_details_input$x_loc + total_moves_right
+        input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "v"
       
-     #input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
-      input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "v"
-      
-      for (i in (guard_details_input$x_loc):(new_x_loc-1)){
-        input_map_extract[[guard_details_input$y_loc]][i] <- "X"
+        } else if (total_moves_right != 0){
+          new_x_loc <- guard_details_input$x_loc + total_moves_right
+          input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "v"
+          
+          for (i in (guard_details_input$x_loc):(new_x_loc-1)){
+            input_map_extract[[guard_details_input$y_loc]][i] <- "X"
+          }
       }
     
     
@@ -202,15 +217,19 @@ motion_down <- function(guard_details_input, input_map, direction){
   
       first_stop <- min(which(lengths(find_all_stops)!=0))
       total_moves_down <-  first_stop - guard_details_input$y_loc - 1
-      new_y_loc <- total_moves_down + guard_details_input$y_loc
       
-      #input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
-      input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- "<"
-      
-      for (i in (guard_details_input$y_loc):(new_y_loc-1)){
-        input_map_extract[[i]][guard_details_input$x_loc] <- "X"
+      if (total_moves_down ==0){
+          new_y_loc <- total_moves_down + guard_details_input$y_loc
+          input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- "<"
+      } else if (total_moves_down != 0){
+          new_y_loc <- total_moves_down + guard_details_input$y_loc
+          input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- "<"
+          
+          for (i in (guard_details_input$y_loc):(new_y_loc-1)){
+            input_map_extract[[i]][guard_details_input$x_loc] <- "X"
+          }
       }
-    
+      
       for (i in 1:length(input_map_extract)){
         input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
       }
@@ -255,15 +274,19 @@ motion_left <- function(guard_details_input, input_map, direction){
   
       first_stop <- max(which(lengths(find_all_stops)!=0))
       total_moves_left <- guard_details_input$x_loc - first_stop - 1
-      new_x_loc <- guard_details_input$x_loc - total_moves_left
       
-      #input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc] <- "."
-      input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "^"
-      
-      for (i in (new_x_loc+1):(guard_details_input$x_loc)){
-        input_map_extract[[guard_details_input$y_loc]][i] <- "X"
+      if (total_moves_left == 0){
+          new_x_loc <- guard_details_input$x_loc - total_moves_left
+          input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "^"
+      } else if (total_moves_left !=0){
+          new_x_loc <- guard_details_input$x_loc - total_moves_left
+          input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "^"
+          
+          for (i in (new_x_loc+1):(guard_details_input$x_loc)){
+            input_map_extract[[guard_details_input$y_loc]][i] <- "X"
+          }
       }
-      
+
       for (i in 1:length(input_map_extract)){
         input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
       }
@@ -342,7 +365,7 @@ direction <- c("\\^","v","\\>","\\<")
 dist_pos <- 1
 
 for (i in 1:length(x_ids)){
-  for (j in 1:length(x_ids[[1]])){
+  for (j in 1:length(x_ids[[i]])){
     
     if (!identical(x_ids[[i]], integer(0))){
       temp_map <- file_content
@@ -369,9 +392,11 @@ start.time <- Sys.time()
 obstruction <- vector(mode = "list", length = 4967)
 inner_count <- 0
 off_map_flag <- FALSE
+count_lim <- 300
 
-for (i in 1:length(alt_input_maps)){
+for (i in 1:4967){
   input_map_ob <- alt_input_maps[[i]]
+  #inner_count <- 0
   #input_map_ob < file_content
   while (isFALSE(off_map_flag)){
     guard_details <- find_guard_details(input_map_ob, direction, dist_pos)
@@ -382,6 +407,8 @@ for (i in 1:length(alt_input_maps)){
       input_map_ob <- up$input_map
       dist_pos <- up$dist_pos
       off_map_flag <- up$flag
+      inner_count <- inner_count + 1
+      #print(paste("Inner Count",inner_count))
       
     } else if (guard_details$direction == "v"){
       down <- motion_down(guard_details,input_map_ob,direction)
@@ -389,6 +416,8 @@ for (i in 1:length(alt_input_maps)){
       input_map_ob <- down$input_map
       dist_pos <- down$dist_pos
       off_map_flag <- down$flag
+      inner_count <- inner_count + 1
+      #print(paste("Inner Count",inner_count))
       
     } else if (guard_details$direction == "<"){
       left <- motion_left(guard_details,input_map_ob,directions)
@@ -396,6 +425,8 @@ for (i in 1:length(alt_input_maps)){
       input_map_ob <- left$input_map
       dist_pos <- left$dist_pos
       off_map_flag <- left$flag
+      inner_count <- inner_count + 1
+      #print(paste("Inner Count",inner_count))
       
     } else if (guard_details$direction == ">"){
       right <- motion_right(guard_details,input_map_ob,direction)
@@ -403,27 +434,37 @@ for (i in 1:length(alt_input_maps)){
       input_map_ob <- right$input_map
       dist_pos <- right$dist_pos
       off_map_flag <- right$flag
+      inner_count <- inner_count + 1
+      #print(paste("Inner Count",inner_count))
     }
     
-    #inner_count <- inner_count + 1
+    
     #print(paste("Count",inner_count))
     
-    if (inner_count > 500){
-      break
-    }
+    if (inner_count > count_lim){
+       break
+     }
   }
   
      
-  if (inner_count > 500){
+  if (inner_count > count_lim){
     obstruction[[i]] <- "Looped"
+    inner_count <- 0
+    off_map_flag <- FALSE
   } else if (!isFALSE(off_map_flag)){
     obstruction[[i]] <- "Not"
+    inner_count <- 0
+    off_map_flag <- FALSE
   }
-  inner_count <- 0 
-
+  
   print(paste("Alt Input",i))
   print(paste("Result",obstruction[[i]]))
 }
+
+find_looped <- str_match_all(obstruction,"Looped")
+looped_ids <- which(lengths(input_map_row)!=0)
+
+pt2_solution <- length(looped_ids)
 
 end.time <- Sys.time()
 time.taken <- end.time - start.time
