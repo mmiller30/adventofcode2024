@@ -462,7 +462,7 @@ for (i in 1:4967){
 }
 
 find_looped <- str_match_all(obstruction,"Looped")
-looped_ids <- which(lengths(input_map_row)!=0)
+looped_ids <- which(lengths(find_looped)!=0)
 
 pt2_solution <- length(looped_ids)
 
