@@ -124,7 +124,120 @@ option_set <- function(input){
       comb_df <- comb_df %>% relocate(Var5, .after=Val5)
       comb_df <- comb_df %>% relocate(Var6, .after=Val6)
       comb_df <- comb_df %>% relocate(Var7, .after=Val7)
-    }
+    } else if (length(input) == 9){
+       df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]), Val8 = as.numeric(values[8]),
+                       Val9 = as.numeric(values[9]))
+      df_duplicate <- rbind(df, df[rep(1, 255), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+      comb_df <- comb_df %>% relocate(Var7, .after=Val7)
+      comb_df <- comb_df %>% relocate(Var8, .after=Val8)
+    } else if (length(input) == 10){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]), Val8 = as.numeric(values[8]),
+                       Val9 = as.numeric(values[9]), Val10 = as.numeric(values[10]))
+      df_duplicate <- rbind(df, df[rep(1, 511), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+      comb_df <- comb_df %>% relocate(Var7, .after=Val7)
+      comb_df <- comb_df %>% relocate(Var8, .after=Val8)
+      comb_df <- comb_df %>% relocate(Var9, .after=Val9)
+    } else if (length(input) == 11){
+       df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]), Val8 = as.numeric(values[8]),
+                       Val9 = as.numeric(values[9]), Val10 = as.numeric(values[10]),
+                       Val11 = as.numeric(values[11]))
+      df_duplicate <- rbind(df, df[rep(1, 1023), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+      comb_df <- comb_df %>% relocate(Var7, .after=Val7)
+      comb_df <- comb_df %>% relocate(Var8, .after=Val8)
+      comb_df <- comb_df %>% relocate(Var9, .after=Val9)
+      comb_df <- comb_df %>% relocate(Var10, .after=Val10)
+      } else if (length(input) == 12){
+       df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]), Val8 = as.numeric(values[8]),
+                       Val9 = as.numeric(values[9]), Val10 = as.numeric(values[10]),
+                       Val11 = as.numeric(values[11]), Val12 = as.numeric(values[12]))
+      df_duplicate <- rbind(df, df[rep(1, 2047), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops, math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+      comb_df <- comb_df %>% relocate(Var7, .after=Val7)
+      comb_df <- comb_df %>% relocate(Var8, .after=Val8)
+      comb_df <- comb_df %>% relocate(Var9, .after=Val9)
+      comb_df <- comb_df %>% relocate(Var10, .after=Val10)
+      comb_df <- comb_df %>% relocate(Var11, .after=Val11)
+      } else if (length(input) == 13){
+       df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]), Val8 = as.numeric(values[8]),
+                       Val9 = as.numeric(values[9]), Val10 = as.numeric(values[10]),
+                       Val11 = as.numeric(values[11]), Val12 = as.numeric(values[12]),
+                       Val13 = as.numeric(values[13]))
+      df_duplicate <- rbind(df, df[rep(1, 4095), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,
+                               math_ops,math_ops,math_ops,math_ops,math_ops, math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+      comb_df <- comb_df %>% relocate(Var7, .after=Val7)
+      comb_df <- comb_df %>% relocate(Var8, .after=Val8)
+      comb_df <- comb_df %>% relocate(Var9, .after=Val9)
+      comb_df <- comb_df %>% relocate(Var10, .after=Val10)
+      comb_df <- comb_df %>% relocate(Var11, .after=Val11)
+      comb_df <- comb_df %>% relocate(Var12, .after=Val12)
+      } else if (length(input) == 14){
+        print("need more")
+        break
+        }
   
     return(comb_df)
 }
