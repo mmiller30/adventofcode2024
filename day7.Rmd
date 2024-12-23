@@ -30,382 +30,142 @@ file_content_test <- readLines(file_path_test)
 
 ```{r functions}
 #Part 1
-perm <- function(n,k){choose(n,k) * factorial(k)}
-
-input <- file_content_test
+input <- file_content
 math_ops <- c("+","*")
+
+option_set <- function(input){
+    values <- input
+    
+    if (length(input) == 2){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]))
+      df_duplicate <- rbind(df, df[rep(1, 1), ])
+      
+      operators <- expand.grid(math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+    } else if (length(input) == 3){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), Val3 = as.numeric(values[3]))
+      df_duplicate <- rbind(df, df[rep(1, 3), ])
+      
+      operators <- expand.grid(math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+    } else if (length(input) == 4){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]))
+      df_duplicate <- rbind(df, df[rep(1, 7), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+    } else if (length(input) == 5){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]))
+      df_duplicate <- rbind(df, df[rep(1, 15), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+    } else if (length(input) == 6){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]))
+      df_duplicate <- rbind(df, df[rep(1, 31), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+    } else if (length(input) == 7){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]))
+      df_duplicate <- rbind(df, df[rep(1, 63), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+    } else if (length(input) == 8){
+      df <- data.frame(Val1 = as.numeric(values[1]), Val2 = as.numeric(values[2]), 
+                       Val3 = as.numeric(values[3]), Val4 = as.numeric(values[4]),
+                       Val5 = as.numeric(values[5]), Val6 = as.numeric(values[6]),
+                       Val7 = as.numeric(values[7]), Val8 = as.numeric(values[8]))
+      df_duplicate <- rbind(df, df[rep(1, 127), ])
+      
+      operators <- expand.grid(math_ops,math_ops,math_ops,math_ops,math_ops,math_ops,math_ops)
+      comb_df <- cbind(df_duplicate, operators)
+      
+      comb_df <- comb_df %>% relocate(Var1, .after=Val1)
+      comb_df <- comb_df %>% relocate(Var2, .after=Val2)
+      comb_df <- comb_df %>% relocate(Var3, .after=Val3)
+      comb_df <- comb_df %>% relocate(Var4, .after=Val4)
+      comb_df <- comb_df %>% relocate(Var5, .after=Val5)
+      comb_df <- comb_df %>% relocate(Var6, .after=Val6)
+      comb_df <- comb_df %>% relocate(Var7, .after=Val7)
+    }
+  
+    return(comb_df)
+}
+
+
+start.time <- Sys.time()
+
 count <- 0 
+result <- 0 
 
 for (i in 1:length(input)){
   tot_i <- str_match_all(input[i],"\\s*(.*?)\\s*:")
   tot_i <- as.numeric(tot_i[[1]][2])
   out_i <- str_split(input[i]," ")
   
-  sum_all <- sum(as.numeric(out_i[[1]][2:length(out_i[[1]])]))
-  mult_all <- Reduce(x=(as.numeric(out_i[[1]][2:length(out_i[[1]])])), f='*')
-  
-  if ((sum_all == tot_i) || (mult_all == tot_i)){
-    count <- count + 1
-  } else if (sum_all > tot_i){
-    break
-  } else if (mult_all < tot_i){
-    break
-  } else if ((sum_all < tot_i) || (mult_all > tot_i)){
-    
-    operators <- expand.grid(math_ops,math_ops)
-    df <- data.frame(x = 81, y = 40, z = 27)
-    df_duplicate <- rbind(df, df[rep(1, 3), ])
-    comb_df <- cbind(df_duplicate, operators)
-    
-    comb_df <- comb_df %>% relocate(Var1, .after=x)
-    comb_df <- comb_df %>% relocate(Var2, .after=y)
-    
-    
-    
-    combinations <- expand.grid(out_i[[1]][2:length(out_i[[1]])],math_ops)
-    combinations <- combinations %>% mutate(num_vec = as.numeric(as.character(combinations$Var1)))
-    
-    for (j in 1:length(combinations$num_vec)){
-      #2 numbers (1 space)
-      test_1 <- combinations$num_vec[1]+combinations$num_vec[2]
-      test_2 <- combinations$num_vec[1]*combinations$num_vec[2]
-      
-      #3 numbers (2 spaces)
-      test_1 <- (combinations$num_vec[1]+combinations$num_vec[2])*combinations$num_vec[3]
-      test_2 <- combinations$num_vec[1]*combinations$num_vec[2]+combinations$num_vec[3]
-      
-      #4 numbers (3 spaces)
-      
-      test_1 <-  combinations$num_vec[1]*combinations$num_vec[2]+combinations$num_vec[3]+combinations$num_vec[4]
-      test_2 <-  combinations$num_vec[1]+combinations$num_vec[2]*combinations$num_vec[3]+combinations$num_vec[4]
-      test_3 <-  combinations$num_vec[1]*combinations$num_vec[2]*combinations$num_vec[3]+combinations$num_vec[4]
-      test_4 <- (combinations$num_vec[1]+combinations$num_vec[2]+combinations$num_vec[3])*combinations$num_vec[4]
-      test_5 <- (combinations$num_vec[1]*combinations$num_vec[2])+combinations$num_vec[3]*combinations$num_vec[4]
-      test_6 <- (combinations$num_vec[1]+combinations$num_vec[2])+combinations$num_vec[3]*combinations$num_vec[4]
-      
-    }
-    
-  }
-  
-  
-  
-  for (j in 2:length(out_i[[1]])){
-    lower_bound <- out_i[[1]][j]
-  }
-  
-  
-}
-
-direction <- c("\\^","v","\\>","\\<")
-wall <- c("#")
-dist_pos <- 1
-count <- 0
-off_map_flag <- FALSE
-
-find_guard_details <- function(input_map, direction, dist_pos){
-  for (i in 1:length(direction)){
-    find_guard_y <- str_match_all(input_map,direction[i])
-    test <- which(lengths(find_guard_y)!=0)
-    
-    if (!is_empty(test)){
-      y <- which(lengths(find_guard_y)!=0)
-      row_y_split <- str_extract_all(input_map[y], boundary("character"))
-      find_guard_x <- str_match_all(row_y_split[[1]],direction[i])
-      x <- which(lengths(find_guard_x)!=0)
-      if ( i == 1){
-        dir <- "^" #up
-      } else if ( i == 2){
-        dir <- "v" #down
-      } else if ( i == 3){
-        dir <- ">" #right
-      } else if ( i == 4){
-        dir <- "<" #left
-      }
-    }
-  }
+  values <- out_i[[1]][2:length(out_i[[1]])]
  
- return(list(y_loc = y, x_loc = x, direction = dir, 
-             dist_pos = dist_pos))
-}
+  comb_df <- option_set(values)
 
-#Motion Up solver
-motion_up <- function(guard_details_input, input_map, direction){
-  motion <- c("Move","Stop")
-  input_map_extract <- str_extract_all(input_map, boundary("character"))
-  walls_along_route <- vector(mode = "list", length = guard_details_input$y_loc)
+  tot_ck <- vector(mode = "list", length = length(comb_df$Val1))
+  
+  for (j in 1:length(tot_ck)){
+    tot_ck[[j]] <- as.numeric(comb_df[j,1])
     
-  for (i in 1:guard_details_input$y_loc){
-    wall_x <- str_match_all(input_map_extract[[i]][guard_details_input$x_loc],wall)
-      if (is_empty(wall_x)) {
-          walls_along_route[[i]] <- "Move"
-      } else if (!is_empty(wall_x)){
-          walls_along_route[[i]] <- "Stop"
+    for (k in seq(2, (length(comb_df[1,])-1), by = 2)){
+      if (comb_df[j,k] == "+"){
+        tot_ck[[j]] <- tot_ck[[j]] + as.numeric(comb_df[j,k+1])
+      } else if (comb_df[j,k] == "*"){
+        tot_ck[[j]] <- tot_ck[[j]] * as.numeric(comb_df[j,k+1])
       }
     }
-
-  find_all_stops <- str_match_all(walls_along_route,"Stop")
   
-  if (is_empty(find_all_stops)){
-
-      for (i in 1:(guard_details_input$y_loc)){
-        input_map_extract[[i]][guard_details_input$x_loc] <- "X"
-      }
-      
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-      return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
-                  input_map = input_map, flag = TRUE))
-      break
-  } else if (!is_empty(find_all_stops)){
-  
-      first_stop <- max(which(lengths(find_all_stops)!=0))
-      total_moves_up <- guard_details_input$y_loc - 1 - first_stop
-      
-      if (total_moves_up == 0){
-        new_y_loc <- guard_details_input$y_loc - total_moves_up
-        input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- ">"
-        
-      } else if (total_moves_up != 0){ 
-          new_y_loc <- guard_details_input$y_loc - total_moves_up
-          input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- ">"
-          for (i in (new_y_loc+1):(guard_details_input$y_loc)){
-            input_map_extract[[i]][guard_details_input$x_loc] <- "X"
-          }
-        }
-    
-    
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-    return(list(y_loc = new_y_loc, x_loc = guard_details_input$x_loc, dir = ">", 
-                input_map = input_map,
-                dist_pos = (guard_details_input$dist_pos + total_moves_up),
-                flag = FALSE))
-    }
-}
-
-#Motion Right solver
-motion_right <- function(guard_details_input, input_map, direction){
-  motion <- c("Move","Stop")
-  input_map_extract <- str_extract_all(input_map, boundary("character"))
-  walls_along_route <- vector(mode = "list", length = length(guard_details_input$x_loc:(length(input_map_extract[[1]])-1)))
-    
-  for (i in 1:length(guard_details_input$x_loc:(length(input_map_extract[[1]])-1))){
-    wall_x <- str_match_all(input_map_extract[[guard_details_input$y_loc]][guard_details_input$x_loc+i],wall)
-      if (is_empty(wall_x)) {
-          walls_along_route[[i]] <- "Move"
-      } else if (!is_empty(wall_x)){
-          walls_along_route[[i]] <- "Stop"
-      }
-    }
-
-  find_all_stops <- str_match_all(walls_along_route,"Stop")
-  
-  if (is_empty(find_all_stops)){
-      
-      for (i in (guard_details_input$x_loc):(length(input_map_extract[[1]]))){
-        input_map_extract[[guard_details_input$y_loc]][i] <- "X"
-      }
-      
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-      return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
-                  input_map = input_map, flag = TRUE))
-      break
-  } else if (!is_empty(find_all_stops)){
-  
-      first_stop <- min(which(lengths(find_all_stops)!=0))
-      
-      total_moves_right <- first_stop - 1
-      if (total_moves_right == 0){
-        new_x_loc <- guard_details_input$x_loc + total_moves_right
-        input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "v"
-      
-        } else if (total_moves_right != 0){
-          new_x_loc <- guard_details_input$x_loc + total_moves_right
-          input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "v"
-          
-          for (i in (guard_details_input$x_loc):(new_x_loc-1)){
-            input_map_extract[[guard_details_input$y_loc]][i] <- "X"
-          }
-      }
-    
-    
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-    return(list(y_loc = guard_details_input$y_loc, x_loc = new_x_loc, dir = "v", 
-                input_map = input_map,
-                dist_pos = (guard_details_input$dist_pos + total_moves_right),
-                flag = FALSE))
-    }
-}
-
-#Motion Down solver
-motion_down <- function(guard_details_input, input_map, direction){
-  motion <- c("Move","Stop")
-  input_map_extract <- str_extract_all(input_map, boundary("character"))
-  walls_along_route <- vector(mode = "list", length = length((guard_details_input$y_loc+1):length(input_map)))
-
-  for (i in ((guard_details_input$y_loc+1):length(input_map))){
-    wall_x <- str_match_all(input_map_extract[[i]][guard_details_input$x_loc],wall)
-      if (is_empty(wall_x)) {
-          walls_along_route[[i]] <- "Move"
-      } else if (!is_empty(wall_x)){
-          walls_along_route[[i]] <- "Stop"
-      }
-    }
-
-  find_all_stops <- str_match_all(walls_along_route,"Stop")
-  
-  if (is_empty(find_all_stops)){
-      
-      for (i in (guard_details_input$y_loc):(length(input_map))){
-        input_map_extract[[i]][guard_details_input$x_loc] <- "X"
-      }
-      
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-      return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
-                  input_map = input_map, flag = TRUE))
-      break
-  } else if (!is_empty(find_all_stops)){
-  
-      first_stop <- min(which(lengths(find_all_stops)!=0))
-      total_moves_down <-  first_stop - guard_details_input$y_loc - 1
-      
-      if (total_moves_down ==0){
-          new_y_loc <- total_moves_down + guard_details_input$y_loc
-          input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- "<"
-      } else if (total_moves_down != 0){
-          new_y_loc <- total_moves_down + guard_details_input$y_loc
-          input_map_extract[[new_y_loc]][guard_details_input$x_loc] <- "<"
-          
-          for (i in (guard_details_input$y_loc):(new_y_loc-1)){
-            input_map_extract[[i]][guard_details_input$x_loc] <- "X"
-          }
-      }
-      
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-    return(list(y_loc = new_y_loc, x_loc = guard_details_input$x_loc, dir = "<", 
-                input_map = input_map,
-                dist_pos = (guard_details_input$dist_pos + total_moves_down),
-                flag = FALSE))
-    }
-}
-
-#Motion Left solver
-motion_left <- function(guard_details_input, input_map, direction){
-  motion <- c("Move","Stop")
-  input_map_extract <- str_extract_all(input_map, boundary("character"))
-  walls_along_route <- vector(mode = "list", length = guard_details_input$x_loc)
-    
-  for (i in 1:(guard_details_input$x_loc-1)){
-    wall_x <- str_match_all(input_map_extract[[guard_details_input$y_loc]][i],wall)
-      if (is_empty(wall_x)) {
-          walls_along_route[[i]] <- "Move"
-      } else if (!is_empty(wall_x)){
-          walls_along_route[[i]] <- "Stop"
-      }
-    }
-
-  find_all_stops <- str_match_all(walls_along_route,"Stop")
-  
-  if (is_empty(find_all_stops)){
-    
-      for (i in 1:(guard_details_input$x_loc)){
-        input_map_extract[[guard_details_input$y_loc]][i] <- "X"
-      }
-    
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-      return(list(dist_pos = (guard_details_input$dist_pos+length(find_all_stops)),
-                  input_map = input_map, flag = TRUE))
-      break
-  } else if (!is_empty(find_all_stops)){
-  
-      first_stop <- max(which(lengths(find_all_stops)!=0))
-      total_moves_left <- guard_details_input$x_loc - first_stop - 1
-      
-      if (total_moves_left == 0){
-          new_x_loc <- guard_details_input$x_loc - total_moves_left
-          input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "^"
-      } else if (total_moves_left !=0){
-          new_x_loc <- guard_details_input$x_loc - total_moves_left
-          input_map_extract[[guard_details_input$y_loc]][new_x_loc] <- "^"
-          
-          for (i in (new_x_loc+1):(guard_details_input$x_loc)){
-            input_map_extract[[guard_details_input$y_loc]][i] <- "X"
-          }
-      }
-
-      for (i in 1:length(input_map_extract)){
-        input_map[[i]] <- paste(input_map_extract[[i]], collapse="")
-      }
-    
-    return(list(y_loc = guard_details_input$y_loc, x_loc = new_x_loc, dir = "^", 
-                input_map = input_map,
-                dist_pos = (guard_details_input$dist_pos + total_moves_left),
-                flag = FALSE))
-    }
-}
-
-start.time <- Sys.time()
-while (isFALSE(off_map_flag)){
-  guard_details <- find_guard_details(input_map, direction, dist_pos)
-  
-  if (guard_details$direction == "^"){
-    up <- motion_up(guard_details,input_map,direction)
-    
-    input_map <- up$input_map
-    dist_pos <- up$dist_pos
-    off_map_flag <- up$flag
-    
-  } else if (guard_details$direction == "v"){
-    down <- motion_down(guard_details,input_map,direction)
-    
-    input_map <- down$input_map
-    dist_pos <- down$dist_pos
-    off_map_flag <- down$flag
-    
-  } else if (guard_details$direction == "<"){
-    left <- motion_left(guard_details,input_map,directions)
-    
-    input_map <- left$input_map
-    dist_pos <- left$dist_pos
-    off_map_flag <- left$flag
-    
-  } else if (guard_details$direction == ">"){
-    right <- motion_right(guard_details,input_map,direction)
-    
-    input_map <- right$input_map
-    dist_pos <- right$dist_pos
-    off_map_flag <- right$flag
+   if (tot_ck[[j]] == tot_i){
+     count <- count + 1
+     result <- result + tot_i
+     break
+   } 
   }
-  count <- count + 1
-  print(paste("Count",count))
 }
-
-input_map_extract <- str_extract_all(input_map, boundary("character"))
-distinct_pos <- 0
-for (i in 1:length(input_map)){
-    input_map_row <- str_match_all(input_map_extract[[i]],"X")
-    distinct_pos <- distinct_pos + length(which(lengths(input_map_row)!=0))
-}
-
-pt1_solution <- distinct_pos
+  
+pt1_solution <- result
 end.time <- Sys.time()
 time.taken <- end.time - start.time
 time.taken
