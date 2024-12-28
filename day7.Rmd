@@ -549,7 +549,7 @@ for (i in 1:length(input)){
   
   values <- out_i[[1]][2:length(out_i[[1]])]
  
-  comb_df <- option_set_pt2(values)
+  comb_df2 <- option_set_pt2(values)
 
   tot_ck <- vector(mode = "list", length = length(comb_df$Val1))
   
