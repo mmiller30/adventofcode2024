@@ -34,161 +34,84 @@ file_string_test <- paste(file_content, collapse = "\n")
 str_trunk <- toString(file_string_test)
 ```
 
-```{r functions}
+```{r redo pt1}
 
-cond_discover <- function(input_str){
-  
-  output <- str_match_all(input_str,"mul\\(\\s*(.*?)\\s*\\)")
-  output_do <- str_match_all(input_str,"do\\(\\)\\s*(.*?)\\s*don't\\(\\)")
-  output_dont <- str_match_all(input_str,"don't\\(\\)\\s*(.*?)\\s*do\\(\\)")
-  
-  sol_do <- matrix(0, nrow = length(output_do[[1]][,1]), ncol = 1)
-  sol_dont <- matrix(0, nrow = length(output_dont[[1]][,1]), ncol = 1)
+input <- str
 
-  for (i in 1:length(output_dont[[1]][,1])) {
-    muls <- mul_discover(output_dont[[1]][i,2])
-    sol_dont[i] <- mullitover_calc(muls)
+all_muls <- str_extract_all(input, pattern = "mul\\(\\d+,\\d+\\)") 
+
+mullitover_calc <- function(input) {
+  temp <- str_split(input[[1]], ",")
+  
+  sol <- matrix(0, nrow = length(temp), ncol = 1)
+  
+  for (i in 1:length(temp)) {
+    nums <- parse_number(temp[[i]])
+    if (length(nums) == 1) {
+      sol[i] <- 0
+    } else if (length(nums) == 2) {
+      result <- nums[1] * nums[2]
+      sol[i] <- result
+    }
   }
   
-  for (i in 1:length(output_dont[[1]][,1])) {
-    muls <- mul_discover(output_dont[[1]][i,2])
-    sol_do[i] <- mullitover_calc(muls)
-  }
-
-  #start <- mullitover_calc(mul_discover(str_turnk)) 
-  #total <- start+sum(sol_do)
-  
-  return(sum(sol_do))
+  ans <- sum(sol)
+  return(ans)
 }
 
+result_pt1 <- mullitover_calc(all_muls) 
+result_pt1
 
-mul_discover <- function(input_str){
-  
-  output <- str_match_all(input_str,"mul\\(\\s*(.*?)\\s*\\)")
-  check_str <- c("m","u","l","\\(",",","\\)")
-  num_let_par <- c("[:alnum:]",",","\\)","\\(")
-  check_para_true <- c("[:digit:]",",")
-  check_para_false <- c("[:alpha:]")
-  check_punc_space <- c("[:punct:]","[:space:]")
-  check_astx <- c("\\*")
+```
+```{r redo pt2}
 
-  for (i in 1:length(output[[1]][,1])) {
-    init_i <- output[[1]][i,1]
-    test_i <- str_detect(init_i,num_let_par)
+input <- str
+
+all_muls <- str_extract_all(input, pattern = "mul\\(\\d+,\\d+\\)") 
+
+do_flag <- TRUE
+
+do_do <- "do\\(\\)s*(.*?)do\\(\\)"
+dont_do <- "don't\\(\\)s*(.*?)do\\(\\)"
+dont_dont <- "don't\\(\\)s*(.*?)don't\\(\\)"
+dont_blank <- "don't\\(\\)"
+do_blank <- "do\\(\\)s*(.*?)"
+mul <- "mul\\(\\s*(.*?)\\s*\\)"
+do <- "do\\(\\)"
+
+
+dont_split <- str_split(input, pattern = dont_blank) 
+do_count <- 0
+dont_count <- 0
+
+for (i in 1:length(dont_split[[1]])) {
+  if (i == 1){
+    muls <- str_extract_all(dont_split[[1]][1], pattern = "mul\\(\\d+,\\d+\\)") 
+    do_count <- do_count + mullitover_calc(muls) 
+  } else if (i > 1){
     
+    do_check <- str_split(dont_split[[1]][i], pattern = do_blank) 
     
-    init_p <- output[[1]][i,2]
-    test_p_t <- str_detect(init_p,check_para_true)
-    test_p_f <- str_detect(init_p,check_para_false)
-    test_e <- str_detect(init_p,check_punc_space)
+    if (length(do_check[[1]]) == 1){
+      muls <- str_extract_all(do_check[[1]], pattern = "mul\\(\\d+,\\d+\\)") 
+      dont_count <- dont_count + mullitover_calc(muls) 
     
-    
-    if (sum(test_i) == 4 && sum(test_p_t) == 2 && sum(test_p_f) == 0){
-      mul_test <- str_match_all(init_p,"mul\\(\\s*(.*?)\\s*,")
-      
-      if (length(mul_test[[1]]) == 0){
-        if (sum(test_e) == 1){
-          if (str_detect(init_p,check_astx) == TRUE){
-            output[[1]][i,1] <- 0
-            output[[1]][i,2] <- 0
-          } else if (str_detect(init_p,check_astx) == FALSE){
-            #do nothing
-          }
-        } else if (sum(test_e) != 1){
-          output[[1]][i,1] <- 0
-          output[[1]][i,2] <- 0
+    } else if (length(do_check[[1]]) > 1){
+      for (k in 1:length(do_check[[1]])){
+        if (k == 1){
+            muls <- str_extract_all(do_check[[1]][k], pattern = "mul\\(\\d+,\\d+\\)") 
+            dont_count <- dont_count + mullitover_calc(muls) 
+        } else if (k > 1){
+            muls <- str_extract_all(do_check[[1]][k], pattern = "mul\\(\\d+,\\d+\\)") 
+            do_count <- do_count + mullitover_calc(muls) 
         }
-      } else if (length(mul_test[[1]]) != 0){
-        split_init <- str_extract_all(init_i, boundary("character"))
-        split_init_1 <- split_init
-        split_init_2 <- split_init
-        
-        split_init_1[[1]][length(split_init_1[[1]])] <- "*"
-        split_init_2[[1]][1] <- "*"
-        
-        split_init_1 <- paste(split_init_1[[1]], collapse="")
-        split_init_2 <- paste(split_init_2[[1]], collapse="")
-        
-        output1 <- str_match_all(split_init_1,"mul\\(\\s*(.*?)\\s*\\)")
-        output2 <- str_match_all(split_init_2,"mul\\(\\s*(.*?)\\s*\\)")
-      
-        if (length(output1[[1]]) == 0 && length(output2[[1]]) == 0){
-          output[[1]][i,1] <- 0
-          output[[1]][i,2] <- 0
-        } else if (length(output1[[1]]) == 0){
-            output[[1]][i,1] <- output2[[1]][,1]
-           } else if (length(output2[[1]]) == 0 ){
-           output[[1]][i,1] <- output1[[1]][,1]
-           }
-      }
-          
-    } else if (sum(test_i) == 4 && sum(test_p_t) == 2 && sum(test_p_f) == 1) {
-        split_init <- str_extract_all(init_i, boundary("character"))
-        split_init_1 <- split_init
-        split_init_2 <- split_init
-        
-        split_init_1[[1]][length(split_init_1[[1]])] <- "*"
-        split_init_2[[1]][1] <- "*"
-        
-        split_init_1 <- paste(split_init_1[[1]], collapse="")
-        split_init_2 <- paste(split_init_2[[1]], collapse="")
-        
-        output1 <- str_match_all(split_init_1,"mul\\(\\s*(.*?)\\s*\\)")
-        output2 <- str_match_all(split_init_2,"mul\\(\\s*(.*?)\\s*\\)")
-      
-          if (length(output1[[1]]) == 0 && length(output2[[1]]) == 0){
-            output[[1]][i,1] <- 0
-             output[[1]][i,2] <- 0
-          } else if (length(output1[[1]]) == 0){
-             output[[1]][i,1] <- output2[[1]][,1]
-             output[[1]][i,2] <- output2[[1]][,2]
-           } else if (length(output2[[1]]) == 0){
-             output[[1]][i,1] <- output1[[1]][,1]
-             output[[1]][i,2] <- output1[[1]][,2]
-           }
-    } else if (sum(test_i) != 4 && sum(test_p_t) != 2 && sum(test_p_f) == 1){
-        output[[1]][i,1] <- 0
-        output[[1]][i,2] <- 0
-    } 
-  } 
-   
-  return(output)
-}
-  
-  
-mullitover_calc <- function(input){
-    temp <- str_split(input[[1]][,2],",")
-    
-    sol <- matrix(0, nrow = length(temp), ncol = 1)
-    
-    for (i in 1:length(temp)) {
-      nums <- parse_number(temp[[i]])
-      if (length(nums) == 1){
-        sol[i] <- 0
-      } else if (length(nums) == 2){
-        result <- nums[1]*nums[2]
-        sol[i] <- result
       }
     }
-    
-    ans <- sum(sol) 
-    return(ans)
   }
+}
 
-
-  
-
-
+result_pt2 <- do_count
+result_pt2
 ```
 
-```{r main}
-result_pt1 <- mullitover_calc(mul_discover(str)) 
-result_pt1 # answer = 164730528
 
-result_pt2 <- cond_discover(str)
-result_pt2 # answer = 50691713 too low, 108299376 too high (1:25 = 5774990)
-```
-
-```{r tests}
-
-```
