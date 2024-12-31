@@ -69,16 +69,8 @@ input <- str
 
 all_muls <- str_extract_all(input, pattern = "mul\\(\\d+,\\d+\\)") 
 
-do_flag <- TRUE
-
-do_do <- "do\\(\\)s*(.*?)do\\(\\)"
-dont_do <- "don't\\(\\)s*(.*?)do\\(\\)"
-dont_dont <- "don't\\(\\)s*(.*?)don't\\(\\)"
 dont_blank <- "don't\\(\\)"
 do_blank <- "do\\(\\)s*(.*?)"
-mul <- "mul\\(\\s*(.*?)\\s*\\)"
-do <- "do\\(\\)"
-
 
 dont_split <- str_split(input, pattern = dont_blank) 
 do_count <- 0
