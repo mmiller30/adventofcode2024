@@ -67,8 +67,6 @@ result_pt1
 
 input <- str
 
-all_muls <- str_extract_all(input, pattern = "mul\\(\\d+,\\d+\\)") 
-
 dont_blank <- "don't\\(\\)"
 do_blank <- "do\\(\\)s*(.*?)"
 
